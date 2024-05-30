@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage{biblatex}
+\addbibresource{literature.bib}
+
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage{caption}
+\usepackage{csquotes}
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{authblk}
+\usepackage{colortbl}
+\usepackage{mathtools}
+\usepackage{placeins}
+\usepackage{graphicx}%
+\usepackage{multirow}%
+\usepackage{textcomp}%
+\usepackage{booktabs}%e
+\usepackage{listings}%
+\usepackage{siunitx}
+\usepackage{todonotes}
+\usepackage{hyperref}
+
+%\setlength{\textwidth}{6.5in}
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+
+\graphicspath{figures/}
+
+\title{Advancing Reinforcement Learning Control: Continuous Scheme and Curriculum Learning for Mechanical Systems}
+
+\author[1,2]{Oleg Rogov} 
+\author[3]{Peter Manzl}
+\author[3]{Johannes Gerstmayr}
+\author[2]{Grzegorz Orzechowski}
+\affil[1]{Savonia University of Applied Sciences}
+\affil[2]{Lappeenranta-Lahti University of Technology LUT}
+\affil[3]{University of Innsbruck}
+
+% \date{January 2024}
+
+\begin{document}
+
+\maketitle
+
+\input{introduction.tex}
+\input{methods.tex}
+\input{results.tex}
+\input{conclusions.tex}
+
+
+\printbibliography
+
+\end{document}
