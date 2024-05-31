@@ -1,6 +1,6 @@
 \section{Results}
 
-In this section we examine the performance of the standard RL algorithm PPO using it for a continuous action space in comparison with the discrete, the results of which we took from our previous paper. We also present the role of CL in the enhancement of the overall RL agent training. 
+In this section we examine the performance of the standard RL algorithm PPO using it for a continuous action space in comparison with the discrete, the results of which we took from our previous paper. First subsection presents the results achieved while comparing the trained agent with the same initial parameters using continuous and discrete control schemes. Second subsection describes the work of an agent in a modified environment, where it operates. In the last subsection we present the role of CL in the enhancement of the overall RL agent training. 
 % put the plot from extended abstract
 % sectionalize this part: 
 % 1) basic comparison of continuous with discrete for: SP, DP(the stability zones are not ready yet), TP(?, not on-going) - stability zones + training time (continuous and discrete plots for 100k timesteps alike)
@@ -80,7 +80,7 @@ Our results show, that not even the operating area of the RL agent is wider and 
 \subsection{Agent tested on modified environments} \label{subsec: Agent tested on modified environments}
 In this section, we examine the impact of changing properties of the environment, namely
 link length, mass, and added friction, on the stability zones. The investigation is conducted
-using the inverted double pendulum on a cart model (same continuous agent as in the Figure~\ref{fig: continuous vs discrete} (b)). The results are presented in Figure~\ref{fig: agent impact on different environments}.
+using the inverted double pendulum on a cart model (same continuous agent as in the Figure~\ref{fig: continuous vs discrete} (b)). In each subplot of Figure~\ref{fig: agent impact on different environments}, the stability zone is determined for the same agent in various modified environments, and the contour of the stability zone from the original environment is overlaid. Friction is implemented using the same method as in our previous research~\cite{manzl2023relrl}.
 
  \begin{figure}[h!]
      \centering
@@ -132,9 +132,12 @@ using the inverted double pendulum on a cart model (same continuous agent as in 
      \label{fig: agent impact on different environments}
  \end{figure}
 
-
+The observations shows, that increasing the link length will cause the stability zone to expand, while not having the increase of the blind spots, as it was for the discrete control cases~\cite{manzl2023relrl}. Increasing the mass of the link doesn't provide any differences from the base model, so that we can state that up to the changes of 20$\%$ the model is independent from the link mass change.
+Considering friction the stability zone becomes smaller within each increase of it, but the value of \( f_{\text{rel}} = 0.02 \) still provides us with the stable zone without causing the agent to fail in the original contour, as it was shown in~\cite{manzl2023relrl}. It can be concluded that the continuous control scheme is more suitable if friction is involved in the environment model simulation.
 
 \subsection{RL training enhancement with CL} \label{subsec: RL training enhancement with CL}
+To select the parameters needed for the CL implementation the research was conducted in the following fashion. At first, we determine which decay type is specifically the most performing for our particular task of pendulum stabilization. For this we have simulated 150 runs of 5 cases within the control values matrix of the form 
+\(\begin{bmatrix} 1 & n \\ 0 & 0 \end{bmatrix}\), where \(n = 2, 4, 6, 8, 10\) and decay steps vector \(\begin{bmatrix} 0 \\ k \end{bmatrix}\), where \(k = 5000, 6000, \ldots, 10000\) to evaluate the performance across different control parameters. The results are presented in a form of a bar plot, which shows the number of agent successes for the whole dataset. It is shown, that the exponential decay type function, provides the best results of having 74$\%$ of successes across the dataset. Within this research conducted, in the next steps we have used this decay type to work with for the CL implementation. 
 
 \begin{figure}[h]
 	\centering
