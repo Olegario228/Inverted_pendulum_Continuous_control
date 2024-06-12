@@ -5,4 +5,8 @@
 *.log
 *.out
 *.run.xml
-*.synctex.gz
+*.synctex*
+
+*.fdb_latexmk
+*.fls
+*.tdo
