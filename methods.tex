@@ -2,7 +2,7 @@
 
 \subsection{Mechanical model}
 
-The system under investigation is a multi-link inverted pendulum on a cart. This setup, known for its inherent instability and dynamic nature, is a cornerstone in control theory\todo{Reference needed.}. The cart, serving as the base platform for the pendulum links, is limited to linear motion along a horizontal track, simplifying the translational dynamics to one-dimensional motion along the x-axis. The cart's movement is controlled by an externally applied force $F$, which is crucial for the system's stabilization. The magnitude and direction of this force significantly impact the system's dynamics, providing a means to counteract the gravitational torque imposed by the pendulum links. 
+The system under investigation is a multi-link inverted pendulum on a cart. This setup, known for its inherent instability and dynamic nature, is a cornerstone in control theory~\cite{Fantoni2001Nonlinear}. The cart, serving as the base platform for the pendulum links, is limited to linear motion along a horizontal track, simplifying the translational dynamics to one-dimensional motion along the x-axis. The cart's movement is controlled by an externally applied force $F$, which is crucial for the system's stabilization. The magnitude and direction of this force significantly impact the system's dynamics, providing a means to counteract the gravitational torque imposed by the pendulum links. 
 
 \begin{figure}[h]
 \centering
@@ -18,9 +18,10 @@ This model, with its high degree of control difficulty and relevance to real-wor
 \subsection{Reinforcement learning with continuous action space}
 Reinforcement Learning (RL) is a branch of machine learning where an agent learns optimal behavior through systematic interaction with a dynamic environment, aiming to maximize cumulative rewards. This learning paradigm is distinct from supervised learning; in RL, the agent is not explicitly instructed which actions to take. Instead, it must explore and discover which actions yield the highest rewards by trial and error, a process often facilitated by a policy—a decision-making function that maps states of the environment to actions to be taken in those states~\cite{sutton_reinforcement_2018}.
 
-In our research RL is employed to train agents to manage the dynamics of a multi-link inverted pendulum on a cart, a challenging control problem characterized by \hl{the need for precision in dynamic stability}\todo{Rewrite. It is unclear what do you mean.}. The reward function in RL plays a crucial role as it guides the learning process. For instance, a reward function can be designed to penalize the agent for excessive movement away from a target state or for using too much energy, while rewarding closer approximations of the desired state, such as maintaining the pendulum in an upright position. We use the reward function, which has shown one of the best performances from our previous study
+In our research, RL is employed to train agents to manage the dynamics of a multi-link inverted pendulum on a cart, a challenging control problem that requires maintaining precise dynamic stability throughout the process. The reward function in RL plays a crucial role as it guides the learning process. For instance, a reward function can be designed to penalize the agent for excessive movement away from a target state or for using too much energy, while rewarding closer approximations of the desired state, such as maintaining the pendulum in an upright position. We use the reward function, which has shown one of the best performances from our previous study
 \begin{equation}
-r_2 = 1 - w_p \frac{\left|p_x\right|}{\chi_\mathrm{cart}} - (1-w_p) \frac{\sum_{j=1}^\mathrm{N} \left|\vartheta_j\right|}{\mathrm{N} \chi_{\vartheta}} \label{eq:reward2}
+r_2 = 1 - w_p \frac{\left|p_x\right|}{\chi_\mathrm{cart}} - (1-w_p) \frac{\sum_{j=1}^\mathrm{N} \left|\vartheta_j\right|}{\mathrm{N} \chi_{\vartheta}} 
+\label{eq:reward2}
 \end{equation}
 It combines a tip position $p_x$\todo{$p_x$ should be shown in the Figure 1.} with the sum of pendulum link angles $\sum_{j=1}^{N} \left|\vartheta_j\right|$, weighted by a factor $w_p$. $\chi_\mathrm{cart}$ and $\chi_{\vartheta}$ are predefined, constant position and angle thresholds, which differ from 1-link to more link systems. $\mathrm{N}$ is the number of the links.
 
@@ -29,16 +30,15 @@ In RL, the choice between discrete and continuous action space might significant
 F = [-f_\mathrm{cart}, +f_\mathrm{cart}]
 \label{eq:force}
 \end{equation}
-From this interval in Eq. 2\todo{Do not use magic numbers in Latex in such way. Instead use \eqref{eq:force}} the agent is free to choose any suitable control force as an action for learning the stabilization task. Since it provides more possible actions then the discrete action space, it emerges in a faster training of an agent and achieves a more smooth and robust control task execution.  
+From this interval in Eq.~\eqref{eq:force} the agent is free to choose any suitable control force as an action for learning the stabilization task. Since it provides more possible actions then the discrete action space, it emerges in a faster training of an agent and achieves a more smooth and robust control task execution.  
 % NOTE: 1) continue with - adding a final punchline to this section
 % While simpler to implement, this can restrict the agent's ability to finely tune its responses to the environment's demands.
 
 \subsection{Curriculum learning implementation} \label{Curriculum learning implementation}
-Our approach to Curriculum Learning in the domain of MSD is rooted in the incremental introduction of complexity to the learning environment of the RL agent.\todo{Which of the types of CL introduced earlier this means?} 
-%Inspired by pedagogical methods where learners progress from simple to complex tasks, we designed a curriculum that starts with the fundamental aspects of mechanical control and systematically advances to more challenging scenarios.
-\todo[inline=true, color=cyan]{This whole section below must be rewritten. Firstly, we discuss that we will not mention the PD control. Physically, we are introducing the translational and rotational spring-dempers. You should add new Figure (based on the Figure 1), to show this. Next, you can write why they are there. Next, that the influence of those spring-dampers will diminish as training progress. Afterwards, you can introduce the Table below and Figure 2. Please avoid asking rethoric questions.}
+Our approach to Curriculum Learning in the domain of MSD is rooted in the incremental introduction of complexity to the learning environment of the RL agent.\todo{Which of the types of CL introduced earlier this means?} % Transfer learning?
+\todo[inline=true, color=cyan]{This whole section below must be rewritten. Firstly, we discuss that we will not mention the PD control. Physically, we are introducing the translational and rotational spring-dampers. You should add new Figure (based on the Figure 1), to show this. Next, you can write why they are there. Next, that the influence of those spring-dampers will diminish as training progress. Afterwards, you can introduce the Table below and Figure 2. Please avoid asking rethoric questions.}
 
-We have four parameters in our CL-scheme and their roles are explained in the Table 1\todo{Again, do not use magic numbers. Replace by \\ref.}.
+We have four parameters in our CL-scheme and their roles are explained in the Table~\ref{table: Decay Types}.
 
 \begin{table}[ht]
 \caption{Decay types and their descriptions}
@@ -50,6 +50,7 @@ Decay Steps & time steps when the transition to another set of Control Values oc
 Decay Function & describes the law on how the Control Values will be changed\\ \hline
 Decay Factor & sets the speed of Decay Function\\ \hline
 \end{tabular}
+\label{table: Decay Types}
 \end{table}
 
 % \begin{table}[ht]
