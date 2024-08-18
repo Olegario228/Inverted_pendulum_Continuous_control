@@ -1,20 +1,42 @@
 \section{Results}
 
 In this section we examine the performance of the state-of-the-art RL algorithm PPO for a discrete and continuous action spaces and show how can CL influence the overall learning task. Most of the results for comparison of the discrete action space are taken from our previous paper~\cite{manzl2023relrl}. First subsection presents the results achieved while comparing the trained agent with the same initial parameters using continuous and discrete control schemes. Second subsection describes the work of an agent in a modified environment, where the physical parameters of the system are changed. In the last subsection we present the role of CL in the enhancement of the overall RL agent training. 
-% put the plot from extended abstract
-% sectionalize this part: 
-% 1) basic comparison of continuous with discrete for: SP, DP(the stability zones are not ready yet), TP(?, not on-going) - stability zones + training time (continuous and discrete plots for 100k timesteps alike)
-% 2) physical values change influence
-% 3) CL enhancement (how does it influence RL?) results - what could be shown there? Training time (from the extended abstract at least): for SP, DP (not prepared), TP (not on-going) and possibly QP (in plans)
-%%%% MUST ASK GRZEGORZ ABOUT THE SMALL CODE PART TO RUN THE TP WITHOUT ISSUES
 
-\subsection{RL with continuous action space} \label{subsec: RL with continuous action space}
+\subsection{Reinforcement Learning: discrete vs continuous action space} \label{Reinforcement Learning: discrete vs continuous action space}
 
-\todo[inline=true]{You must introduce the details of the system first. It means, description of the system and numbers provided. If the system is already described, like here, you must reference and provide missing information. Same applies to algorithm, reward (what are thresholds), number of runs, etc.}
+To make a comparative analysis we present figures, which illustrate the training performance of an agent via RL-training using in both discrete and continuous action spaces across three different systems: a single-link pendulum (Figure~\ref{fig: training time comparison} (a)), a two-link pendulum (Figure~\ref{fig: training time comparison} (b)), and a three-link pendulum (Figure~\ref{fig: training time comparison} (c)) The discrete action space data, represented by the blue curves, are derived from our previous study of Manzl et. al.~\cite{manzl2023relrl}, while the continuous action space results, represented by the orange curves, are from the current analysis. The vertical dashed lines in each plot indicate the training step at which the agent reaches the maximum number of evaluation tests.
+For the single-link system, the agent trained with a continuous action space achieves optimal performance much faster than the agent trained with a discrete action space. The continuous action space agent stabilizes around 23000 steps, while the discrete agent takes approximately 53,000 steps to achieve a similar level of performance. This indicates that the continuous action space allows for finer control and quicker convergence in simpler systems. The two-link system reveals an even more pronounced difference. The continuous action space agent reaches stable performance at around 46000 steps, significantly ahead of the discrete action space agent, which stabilizes much later at around 101,000 steps. The continuous agent not only converges faster but also exhibits higher stability in maintaining optimal rewards throughout training. In the more complex three-link system, the advantage of the continuous action space is evident once again. The continuous agent reaches optimal performance at around 270000 steps, whereas the discrete agent takes over 500,000 steps to achieve comparable results. Notably, the discrete agent experiences significant fluctuations in performance, underscoring the challenges posed by the increased complexity when using a discrete action space.
 
-\todo[inline=true, color=cyan]{Before you will show the stability zones, you must provide a plots about the training itself. So the reward plots as a function of epochs. It is important to point out that the training has converge and to know what are the parameteres of training algorithm as well. Stability zones cames later. As such, change the order of the plots. Remember that firstly, you are explaining in details what you are showing. Next, you are providing the interpretation of results.}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/SP_discrete_vs_continuous_training_time.png}
+		\label{fig: sp - training time}
+		\caption{1-link system. Agent in continuous action space reaches maximum number of successful tests in approximately of 23000 timesteps.}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/DP_discrete_vs_continuous_training_time.png}
+		\label{fig: dp - training time}
+		\caption{2-link system. At the timesteps of 46000 the agent has reached the maximum number of successful tests.}
+	\end{subfigure}
+	\begin{subfigure}[t]{0.48\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/TP_discrete_vs_continuous_training_time.png}
+		\label{fig: tp - training time}
+		\caption{3-link system. Less then 300000 timesteps required to train the system with the usage of continuous action space.}
+	\end{subfigure}
+	
+	\caption{Training times for the PPO agents for 1-link (a), 2-link (b) and 3-link (c) systems}
+	\label{fig: training time comparison}
+\end{figure}
 
-For a better evaluation of the continuous control scheme in comparison to the discrete one, we have created a stability zone\todo{You must explain what stability zone is.}, the development of which is described in our work of Manzl et al.~\cite{manzl2023relrl}. From an engineering standpoint, not only are the randomized tests used for evaluation important, but it is also crucial to identify an area where the agent successfully performs the stabilization task for practical, real-world applications.\todo{Put this sentence later, after you present the results and explain their meaning. And discuss how the results you are showing agree with your statement.} The stability zone is shown in Figure~\ref{fig: continuous vs discrete}. A heatmap displays test results across a grid of parameters, plotting the link's angle on the X-axis and angular velocity on the Y-axis. The continuous control scheme, which replaces the earlier discrete scheme, demonstrates a broader area of optimal performance and smoother transitions at boundary conditions, suggesting improved control capabilities.\todo{Add more details based on the Figure. You can analyze each of the subfigures in details. Explain what each subfigure shows. You should not add a big Figure and summarize it by saying \textit{it works better}.}
+The continuous action space consistently demonstrates superior stability across all systems, as reflected in the smoother reward curves after convergence. It also reduces training time on up to 50\% for an agent to achieve a maximum number of successful tests. In contrast, the discrete action space leads to more oscillatory performance, particularly in more complex systems, which could indicate less efficient exploration and exploitation during training.
+
+For a deeper evaluation of the continuous control scheme in comparison to the discrete one, we have created a stability zone, the development of which is described in our work of Manzl et al.~\cite{manzl2023relrl}. From an engineering standpoint, not only are the randomized tests used for evaluation important, but it is also crucial to identify an area where the agent successfully performs the stabilization task for practical, real-world applications. The stability zones are shown in Figure~\ref{fig: continuous vs discrete} and illustrate the performance of discrete (orange) and continuous (light yellow) action spaces. These zones represent the regions in state space where the agent successfully maintains the pendulum's stability. The axes represent different state variables depending on the system's complexity, as detailed below.
+For the 1-link system (Figure~\ref{fig: continuous vs discrete} (a)) the stability zones are depicted as elongated regions around the origin where the pendulum is successfully balanced. X-axis represent the link's angle and Y-axis its angular velocity. The continuous action space encompasses a slightly broader area compared to the discrete action space, indicating a greater tolerance for variations in the angle and angular velocity. This suggests that the continuous action space provides more flexibility in controlling the pendulum, allowing it to stabilize from a wider range of initial conditions. For the 2-link system (Figure~\ref{fig: continuous vs discrete} (b)), the stability zones are narrower and more elongated, reflecting the increased complexity of the system. First and the second link angle combinations are presented in this zone. The continuous action space again covers a slightly larger area than the discrete action space, particularly along the axis. This expanded zone suggests that the continuous action space better handles the interactions between the two links, allowing for more robust stabilization strategies. In the 3-link system (Figure~\ref{fig: continuous vs discrete} (c) and Figure~\ref{fig: continuous vs discrete} (d)), the stability zones become even more restricted, particularly in the second plot, where the angles of the second and third links are plotted. The continuous action space consistently outperforms the discrete space by maintaining a larger stability region in both plots. The narrower orange zones indicate that the discrete action space struggles with the additional degrees of freedom, whereas the continuous action space adapts more effectively to the system's increased complexity.
 
 \begin{figure}[h!]
 	\centering
@@ -52,41 +74,15 @@ For a better evaluation of the continuous control scheme in comparison to the di
 	\label{fig: continuous vs discrete}
 \end{figure}
 
-The training speed is also significantly different in terms of reaching the required amount of tests for the discrete and continuous control algorithm while it is not clearly seen for the 1- and 2-link systems.\todo{Unclear what you are saying. What is training speed? Where is the information about those tests that are required?} Comparison of it is shown at the Fig~\ref{fig: training time comparison}. To clarify what trains faster, the line, where the agent reaches maximum required amount of successful tests is drawn for each system with the shown time step. For all three cases the difference between the discrete and continuous control algorithm is around 45-50$\%$ in reaching the successful training, while for the triple pendulum the stable training using discrete control algorithm has be reached after 500 000 time steps.\todo{As above, you should refer to each subplot separately before providing general conclusions.}  
+These stability zones highlight the advantages of continuous action spaces in maintaining the stability of multi-link inverted pendulum systems. As the system's complexity increases (from 1-link to 3-link), the continuous action space's broader stability regions suggest a higher robustness to variations in state variables, making it more effective in stabilizing complex systems.
+The continuous action space's ability to control a wider range of initial conditions is particularly beneficial in systems with multiple degrees of freedom, where precise and adaptive control strategies are required. This is evident in the progressively more complex systems, where the continuous action space maintains larger stability zones, indicating better overall performance.
+These findings support the notion that continuous action spaces may be more suitable for applications requiring fine-tuned control in high-dimensional environments, where the ability to handle a broader range of state variations is crucial for success.
 
-\begin{figure}[h!]
-	\centering
-	\begin{subfigure}[t]{0.48\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{Figures/SP_discrete_vs_continuous_training_time.png}
-		\label{fig: sp - training time}
-		\caption{}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[t]{0.48\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{Figures/DP_discrete_vs_continuous_training_time.png}
-		\label{fig: dp - training time}
-		\caption{}
-	\end{subfigure}
-	\begin{subfigure}[t]{0.48\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{Figures/TP_discrete_vs_continuous_training_time.png}
-		\label{fig: tp - training time}
-		\caption{}
-	\end{subfigure}
-	
-	\caption{Training times for the PPO agents for 1-link (a), 2-link (b) and 3-link (c) systems}
-	\label{fig: training time comparison}
-\end{figure}
-
-Our results show, that not even the operating area of the RL agent is wider and smoother, but the agent also achieves a faster training result. 
-
-\subsection{Agents with continous action space tested on modified environments} \label{subsec: Agent tested on modified environments}
+\subsection{Agents with continuous action space tested on modified environments} \label{subsec: Agent tested on modified environments}
 
 In this section, we examine the impact of changing properties of the environment, namely
-link length, mass, and added friction, on the stability zones.\todo{Provide more details, refer actual parameters, what friction, where, refer to Figures, etc.} The investigation is conducted
-using the inverted double pendulum on a cart model (same continuous agent as in the Figure~\ref{fig: continuous vs discrete} (b)). In each subplot of Figure~\ref{fig: agent impact on different environments}, the stability zone is determined for the same agent in various modified environments, and the contour of the stability zone from the original environment is overlaid. Friction is implemented using the same method as in our previous research~\cite{manzl2023relrl}.\todo{Provide details here as this should not take long to describe it.}
+link length, mass, and added friction, on the stability zones. The friction is implemented in the same fashion as in our previous study~\cite{manzl2023relrl} and is modeled using Coulomb friction, characterized by a friction torque, which opposes rotation and is independent of the applied forces. The investigation is conducted
+using the inverted double pendulum on a cart model (same continuous agent as in the Figure~\ref{fig: continuous vs discrete} (b)). In each subplot of Figure~\ref{fig: agent impact on different environments}, the stability zone is determined for the same agent in various modified environments, and the contour of the stability zone from the original environment is overlaid.
 
  \begin{figure}[h!]
      \centering
@@ -134,12 +130,12 @@ using the inverted double pendulum on a cart model (same continuous agent as in 
          \caption{}
      \end{subfigure}
 
-     \caption{The stability zone for the double link system using the PPO agent, case 0. The red boundary corresponds to that depicted continuous control stability zone in Figure~\ref{fig: continuous vs discrete} (b). The environment parameters are modified as follows: (a) 1.1~$l$, (b) 1.2~$l$, (c) 1.1~$m$, (d) 1.2~$m$, (e) $f_rel$ = 0.01, and (f) $f_rel$ = 0.02.}
+     \caption{The stability zone for the double link system using the PPO agent, case 0. The red boundary corresponds to that depicted continuous control stability zone in Figure~\ref{fig: continuous vs discrete} (b). The environment parameters are modified as follows: (a) 1.1~$l$, (b) 1.2~$l$, (c) 1.1~$m$, (d) 1.2~$m$, (e) $f_{rel}$ = 0.01, and (f) $f_{rel}$ = 0.02.}
      \label{fig: agent impact on different environments}
  \end{figure}
 
-The observations shows, that increasing the link length will cause the stability zone to expand, while not having the increase of the blind spots, as it was for the discrete control cases~\cite{manzl2023relrl}.\todo{Refer to the figures. It seems that the longer the link, the larger is the change. Consider testing what happens when link is shorten. More details about behavior of the system in the original work. Does it also increases? By same factor?} Increasing the mass of the link doesn't provide any differences from the base model, so that we can state that up to the changes of 20$\%$ the model is independent from the link mass change.\todo{How it was for discrete? The same?}
-Considering friction the stability zone becomes smaller within each increase of it, but the value of \( f_{\text{rel}} = 0.02 \) still provides us with the stable zone without causing the agent to fail in the original contour, as it was shown in~\cite{manzl2023relrl}. It can be concluded that the continuous control scheme is more suitable if friction is involved in the environment model simulation.
+The observations shows, that increasing the link length will cause the stability zone to expand (see Figures~\ref{fig: agent impact on different environments} (a) and (b)), while not having the increase of the blind spots, as it was for the discrete control cases~\cite{manzl2023relrl}. Increasing the mass of the link doesn't provide any differences from the base model (Figures~\ref{fig: agent impact on different environments} (c) and (d)), so that we can state that up to the changes of 20\% the model is independent from the link mass change, showing the same behavior as for the discrete model, where the changing of mass was also neglectable on the stability zones.
+Considering friction the stability zone becomes smaller within each increase of it, but the value of \( f_{\text{rel}} = 0.02 \) still provides us with the stable zone without causing the agent to fail in the original contour (Figures~\ref{fig: agent impact on different environments} (e) and (f)), as it was shown in~\cite{manzl2023relrl}. It can be concluded that the continuous control scheme is more suitable if friction is involved in the environment model simulation.
 
 \subsection{RL training enhancement with CL} \label{subsec: RL training enhancement with CL}
 To select the parameters needed for the CL implementation the research was conducted in the following fashion. At first, we determine which decay type is specifically the most performing for our particular task of pendulum stabilization. For this we have simulated 150 runs of 5 cases within the control values matrix of the form 
