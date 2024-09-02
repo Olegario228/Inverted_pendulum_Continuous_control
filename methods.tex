@@ -20,8 +20,8 @@ Reinforcement Learning is a branch of machine learning where an agent learns opt
 
 In our research, RL is employed to train agents to manage the dynamics of a multi-link inverted pendulum on a cart, a challenging control problem that requires maintaining precise dynamic stability throughout the process. The reward function in RL plays a crucial role as it guides the learning process. For instance, a reward function can be designed to penalize the agent for excessive movement away from a target state or for using too much energy, while rewarding closer approximations of the desired state, such as maintaining the pendulum in an upright position. We use the reward function, which has shown one of the best performances from our previous study
 \begin{equation}
-r_2 = 1 - w_p \frac{\left|p_x\right|}{\chi_\mathrm{cart}} - (1-w_p) \frac{\sum_{j=1}^\mathrm{N} \left|\theta_j\right|}{\mathrm{N} \chi_{\theta}} 
-\label{eq:reward2}
+r = 1 - w_p \frac{\left|p_x\right|}{\chi_\mathrm{cart}} - (1-w_p) \frac{\sum_{j=1}^\mathrm{N} \left|\theta_j\right|}{\mathrm{N} \chi_{\theta}} 
+\label{eq:reward}
 \end{equation}
 It combines a tip position with the sum of pendulum link angles $\sum_{j=1}^{N} \left|\theta_j\right|$, weighted by a factor $w_p$. $\chi_\mathrm{cart}$ and $\chi_{\theta}$ are predefined, constant position and angle thresholds, which differ from 1-link to more link systems. $\mathrm{N}$ is the number of the links.
 
@@ -57,7 +57,7 @@ Table~\ref{tab:hyperparameters} summarizes the hyperparameters used in the exper
 	\begin{tabular}{ll|ll}
 		\toprule
 		\textbf{Parameter}       & \textbf{Value} & \textbf{Parameter}       & \textbf{Value} \\ \midrule
-		Reward function          & $r_2$, Eq.~\ref{eq:reward2},  & Reward threshold         & $\lambda_r = 0.9$ \\ 
+		Reward function          & $r$, Eq.~\ref{eq:reward},  & Reward threshold         & $\lambda_r = 0.9$ \\ 
 		Step size                & 20 ms           & Loss threshold           & $\lambda_l = 0.01$ \\ 
 		Evaluation length        & 5000 steps $\Rightarrow$ 100 s & PPO: $n_{\text{steps}}$       & $n_{\text{episode,max}}$ \\ 
 		Learning rate      & $5 \cdot 10^{-4}$ & & \\ \bottomrule
