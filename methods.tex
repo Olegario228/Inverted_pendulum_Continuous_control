@@ -42,7 +42,7 @@ For the model evaluation we use the same specifications as in our previous resea
 \end{equation}
 The training is deemed complete when \( e_{\text{test}} \) falls below a pre-determined threshold \( \chi_{\text{test}} \) for all tests, providing a criterion for potential early stopping. To assess model robustness, several agents are trained and evaluated, with their performances depicted as envelopes formed by the best, worst, and mean error metrics across time steps. Notably, early evaluation results (within the first 50,000 steps) may be unreliable due to insufficient model development, necessitating the use of linear interpolation for clearer data interpretation.
 
-\subsection{Performance evaluation of PPO with continuous action space} \label{Performance Evaluation of PPO with Discrete and Continuous Action Spaces}
+\subsection{Performance evaluation of PPO with continuous action space} \label{subsec: Performance Evaluation of PPO with Discrete and Continuous Action Spaces}
 
 For the evaluation of an action space benefits in our study we use the PPO RL-algorithm. PPO algorithm itself aims to improve policy gradient methods by optimizing a surrogate objective function while ensuring that updates to the policy do not deviate too far from the previous policy. It accomplishes this by using a clipped objective function that limits the size of policy updates, thereby stabilizing training and improving performance~\cite{schulman2017ppo}. The evaluation is conducted on an N-link inverted pendulum system, specifically analyzing the performance with 1-link, 2-link, and 3-link systems. The analysis explores two different action spaces and their impact on the agent's ability to stabilize the pendulum in the upward-facing equilibrium. 
 For all systems, we focus on the task of balancing the inverted pendulum in the unstable upward-facing equilibrium. The challenge increases with the number of links, as each additional link contributes to the overall instability of the system. The single pendulum is a well-known benchmark for RL methods, and this evaluation extends to more complex systems with additional links.
@@ -86,7 +86,7 @@ Table~\ref{tab:hyperparameters} summarizes the hyperparameters used in the exper
 
 The continuous action space, particularly in the control of the cart force, provides more nuanced control via the specified interval of the force, which is expected to influence the stabilization process, especially in the more complex multi-link systems.
 
-\subsection{Curriculum learning implementation} \label{Curriculum learning implementation}
+\subsection{Curriculum learning implementation} \label{subsec: Curriculum learning implementation}
 Our approach to Curriculum Learning in the domain of MSD is rooted in the incremental introduction of complexity to the learning environment of the RL agent, which, according to the taxonomy provided in~\cite{narvekar2020survey}, is based on Transfer Learning.
 In our study, the concept of CL is physically represented through the implementation of mechanical spring-damper systems, which play a crucial role in regulating the dynamic behavior of the system under study. These spring-damper complexes are strategically positioned between different components of the system to modulate the interactions and stability during the learning process. A schematic view of this physical representation is illustrated in Figure~\ref{fig: cl mechanical implementation}. Here, we utilize two types of spring-damper systems: a translational spring-damper and a rotational spring-damper. The translational spring-damper is connected between the cart body and the ground. Its primary function is to restrict the translational movement of the cart along the x-axis. By controlling this movement, the translational spring-damper indirectly adjusts the speed of the pendulum system, ensuring stability during the initial learning phases. This stability is vital for the agent to safely explore the system dynamics without being overwhelmed by excessive movement. The rotational spring-damper systems are attached to the revolute joints, regulating the angular displacement of the pendulum. These systems provide resistance to angular changes, thus preventing abrupt rotational movements that could destabilize the learning process. By controlling the angular behavior, the rotational spring-dampers ensure that the pendulum remains within a manageable range of motion during the early stages of learning.
 
@@ -103,13 +103,13 @@ Following this physical setup, We have four parameters in our CL-scheme and thei
 \begin{table}[h]
 	\caption{Decay types and their descriptions}
 	\centering
-	\begin{tabular}{m{2.4cm}|m{5cm}}
+	\begin{tabular}{l|p{0.7\textwidth}}
 		\toprule
-		\textbf{Curriculum Learning Parameters} & \textbf{Description} \\ \midrule
-		Control Values & control parameters representing spring-damper values, which influence the restriction of the system behavior\\ \hline 
-		Decay Steps & time steps when the transition to another set of Control Values occurs\\ \hline 
-		Decay Function & describes the law on how the Control Values will be changed\\ \hline
-		Decay Factor & sets the speed of Decay Function\\ 
+		\makecell{\textbf{Curriculum}\\ \textbf{Learning}\\ \textbf{parameters}} & \textbf{Description} \\ \midrule
+		Control values & control parameters representing spring-damper values, which influence the restriction of the system behavior\\ \hline 
+		Decay steps & time steps when the transition to another set of control values occurs\\ \hline 
+		Decay function & describes the law on how the control values will be changed\\ \hline
+		Decay factor & sets the speed of decay function\\ 
 		\bottomrule
 	\end{tabular}
 	\label{table: decay types}

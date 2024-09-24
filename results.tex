@@ -139,7 +139,9 @@ Considering friction the stability zone becomes smaller within each increase of 
 
 \subsection{RL training enhancement with CL} \label{subsec: RL training enhancement with CL}
 
-Before conducting the analysis there is a need to come up with baseline results of the continuous RL method PPO without its enhancement with Curriculum Learning. For this we have conducted tests using the system parameters presented in the Table~\ref{tab:hyperparameters} and~\ref{tab:env_params} for systems with 1 to 3 links. For each system there are 10 cases, which represent random initial states are simulated to show the variability of control across different initial conditions. The baseline is set according to the values of mean, median, minimum and maximum of training timesteps across cases, where mean and median are the main indicators to orient on. The Table~\ref{tab: baseline statistics for PPO in continuous action space} shows the results of the RL training using PPO algorithm in continuous action space.
+\textit{a) setting up a baseline}
+
+Before proceeding with the analysis, it is essential to establish baseline results for the continuous RL PPO method, without enhancements from Curriculum Learning. This provides a point of reference to assess how much CL can improve performance. For this we have conducted tests using the system parameters presented in the Table~\ref{tab:hyperparameters} and~\ref{tab:env_params} for systems with 1 to 3 links. For each system, 10 distinct simulation cases were executed to account for variability in control due to different initial conditions. The baseline is determined by measuring the training timesteps required for success, focusing primarily on the mean and median values, which serve as the key performance indicators. Additionally, the minimum and maximum values provide insight into the range of results across cases. These metrics allow us to assess the general performance of PPO in continuous action space. Table~\ref{tab: baseline statistics for PPO in continuous action space} summarizes the results for the RL training using the PPO algorithm in continuous action space. The results are presented for systems with 1, 2, and 3 links.
 
 \begin{table}[ht]
 	\centering
@@ -154,35 +156,43 @@ Before conducting the analysis there is a need to come up with baseline results 
 	\label{tab: baseline statistics for PPO in continuous action space}
 \end{table}
 
-To select the parameters needed for the CL implementation the research was conducted in steps. At first, we determine which decay type is specifically the most performing for our particular task of pendulum stabilization. For this we have simulated 150 runs of 5 cases within the control values matrix of the form 
-\(\begin{bmatrix} 1 & n \\ 0 & 0 \end{bmatrix}\), where \(n = 2, 4, 6, 8, 10\) and decay steps vector \(\begin{bmatrix} 0 \\ k \end{bmatrix}\), where \(k = 5000, 6000, \ldots, 10000\) to evaluate the performance across different control parameters. The results are presented in a form of a bar plot, which shows the number of agent successes for the whole dataset. It is shown, that the exponential decay type function, provides the best results of having 74$\%$ of successes across the dataset. 
+As indicated in Table~\ref{tab: baseline statistics for PPO in continuous action space}, the results show a clear progression in training time as the system complexity increases from 1-link to 3-link. The 1-link system requires the least number of timesteps on average to reach successful training, while the 3-link system exhibits significantly higher values, with a mean training time nearly 10 times longer than the 1-link system. This demonstrates that as the system complexity increases, the training duration grows substantially, making it harder for the PPO algorithm to converge quickly.
+The primary goal of introducing CL enhancement is to accelerate the training process and potentially make the system more robust to various initial conditions. By progressively increasing the difficulty of the tasks during training, we aim to reduce the number of timesteps required for convergence. To further explore the impact of CL, the next step focuses on selecting the appropriate CL implementation parameters, dividing the research into well-defined steps.
+
+\textit{b) selection of a decay type (function)} 
+
+At first, we shall determine which decay type is specifically the most performing for our particular task of pendulum stabilization. For this we have tested all described decay functions in subsection~\ref{subsec: Curriculum learning implementation} on a single pendulum system. With 150 runs per decay function of 5 initialization cases we use control values matrix of the form 
+\(\begin{bmatrix} 1 & n \\ 0 & 0 \end{bmatrix}\), where \(n = 2, 4, 6, 8, 10\) and decay steps vector \(\begin{bmatrix} 0 \\ k \end{bmatrix}\), where \(k = 5000, 6000, \ldots, 10000\) to evaluate the performance across different control parameters. The results are presented in a form of a bar plot, which shows the number of agent successes for the whole dataset (see Figure~\ref{fig: decay types comparison}).  
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=10cm]{Figures/decay_types_results_comparison.png}
-	\caption{}
+	\includegraphics[width=12cm]{Figures/decay_types_results_comparison.png}
+	\caption{Simulation results for decay types analysis. Each bar plot represents the value of successfully trained cases out of 150 in total per decay function.}
 	\label{fig: decay types comparison}
 \end{figure}
 
-Within the results of this research, later on we use exponential decay type to work with for the CL implementation. Next step includes the development of control values decay scheme to analyze their influence while varying decay steps.
-% btw i have completely forgot about decay factor (should we add some simple description for it about why we have chosen 0.005?). Since i have the results on varying it on 5 different values, we can as well show some statistics here about it.
-% can also be shown as a table, possible to say that our analysis was total: [1 n], [1 n n] and [1 n n n n] and that we have selected the best results out of those schemes)
-% should we add comparison of decay factors?  
-%\begin{table}[ht]
-%	\centering
-%	\caption{CL schemes for each pendulum system type}
-%	\begin{tabular}{@{}lcc@{}}
-%		\toprule
-%		\textbf{System} & \textbf{Control values scheme} & \textbf{Decay steps} \\ \midrule
-%		\textit{1-link} & \(\begin{bmatrix} 1 & n \\ 0 & 0 \end{bmatrix}\) & 1000 ... 12000, h = 1000 \\
-%		\textit{2-link} & \(\begin{bmatrix} 1 & n & n \\ 0 & 0 & 0 \end{bmatrix}\) & 9000 ... 22000, h = 1000 \\
-%		\textit{3-link} & \(\begin{bmatrix} 1 & n & n & n \\ 0 & 0 & 0 & 0 \end{bmatrix}\) & 30000 ... 50000, h = 1000 \\ \bottomrule
-%	\end{tabular}
-%	\label{tab: CL simulation data}
-%\end{table}
+The exponential decay function, provides the best results of having 74\% of successes across the dataset and therefore will be considered as the main function used in our next analysis. 
 
-For the single pendulum system the control values matrix is remained unchanged in the form of \(\begin{bmatrix} 1 & n \\ 0 & 0 \end{bmatrix}\), since the system is relatively simple and does not need a lot of restriction in its movements to improve the training speed. Experiments were conducted with $n$ value varying from 0.1 to 1 with step size equal to 0.1 and from 1 to 12 with step size equal to 1. Decay steps were varied from 1000 to 12000 with the step size of 1000. Double pendulum system control scheme is selected as \(\begin{bmatrix} 1 & c \cdot n & r \cdot n \\ 0 & 0 & 0 \end{bmatrix}\), where $c$ and $r$ are extension coefficients, implemented to see the difference in results, while varying the pendulum link constraints magnitude, where \(c = 1, 2, 4, 8\) and \(r = 1, 2, 4, 8\), while \(n = 1, 2, \ldots, 10\). Decay steps are varied from 9000 to 22000 with step size equal to 1000. For the triple link system the scheme \(\begin{bmatrix} 1 & 4n & 2n & n \\ 0 & 0 & 0 & 0 \end{bmatrix}\), where \(n = 1, 2, \ldots, 10\) is selected due to the need of stronger restriction on the first link, since it holds the mass of two attached to it next links. Variation of decay steps is performed from 30000 to 50000 with the step size equal to 1000. 
-Evaluation of the obtained results is performed across cases within each distinctive combination of control values and decay steps and not across the whole control scheme, since the implemented Curriculum Learning requires these values, with which the controlled system can be trained faster and be more robust. To find the best combination of control values scheme and decay steps we focus on 3 main factors: number of successfully trained cases in each combination, mean and median values of the training time. For the single and double pendulum systems the successful case is the one which reaches 50/50 tests. For the triple pendulum system we were not able to reach an exact number of 100 successful tests, so the baseline of success is set to at least 70/100 tests being passed by the simulated system. The results are shown in the Table~\ref{tab: CL results}.
+\textit{c) selection of decay factor}
+
+For the selection of the decay factor, we performed an extensive analysis using a double pendulum system. The control values matrix was set as \(\begin{bmatrix} 1 & n & n \\ 0 & 0 & 0 \end{bmatrix}\), where \(n = 1, 2, \ldots, 10\). The decay steps, which represent how long the curriculum learning is conducted, were varied from 9000 to 22000 with increments of 1000. For each unique combination of control values, decay steps, and decay factors, we executed 10 cases to ensure the reliability and robustness of our results. In total, we analyzed 4 decay factors: 0.005, 0.01, 0.05, and 0.5, generating a dataset with approximately 70,000 lines of results. The objective of this analysis was to determine the optimal decay factor for maximizing the system's learning performance.
+The output metric used for comparison included the value of training timesteps. This metric provide insight into how efficiently the system is able to solve tasks within the corresponding timesteps.
+
+\begin{figure}[h] 
+	\centering 
+	\includegraphics[width=15cm]{Figures/MaxSuccessfulTestsTimesteps_heatmap.png} 
+	\caption{Heatmap showing the impact of different decay factors on the number of successful tests and timesteps. The decay factor 0.005 consistently performs best in terms of minimizing timesteps.} 
+	\label{fig: decay factors comparison}
+\end{figure}
+
+As shown in Figure~\ref{fig: decay factors comparison} decay factor 0.005 consistently results in the lowest timesteps across all combinations of control values and decay steps. This indicates that the system converges faster and more efficiently with a decay factor of 0.005 compared to the other decay factors. The smaller the timesteps, the faster the system is able to learn, making 0.005 the most optimal choice for our training setup.
+
+\textit{d) applying CL enhancement}
+
+The next step in our analysis involves the development of a control value decay scheme to assess its influence while varying decay steps. For the single pendulum system, the control values matrix is maintained as \(\begin{bmatrix} 1 & n \\ 0 & 0 \end{bmatrix}\), since the simplicity of the system allows for efficient training without requiring significant constraints on movement. Experiments were conducted by varying $n$ from 0.1 to 1 (step size of 0.1), and from 1 to 12 (step size of 1). Decay steps ranged from 1000 to 12000, with increments of 1000. 
+For the double pendulum system, the control scheme was set as \(\begin{bmatrix} 1 & c \cdot n & r \cdot n \\ 0 & 0 & 0 \end{bmatrix}\), where $c$ and $r$ represent extension coefficients used to observe the effects of pendulum link constraint magnitudes on the results and are varied over the set \({1, 2, 4, 8}\), while \(n = 1, 2, \ldots, 10\). Decay steps were varied between 9000 and 22000, with an increment of 1000. 
+For the triple link system, the control scheme used was \(\begin{bmatrix} 1 & 4n & 2n & n \\ 0 & 0 & 0 & 0 \end{bmatrix}\), where \(n = 1, 2, \ldots, 10\). This configuration required stronger restrictions on the first link due to its responsibility in bearing the mass of the subsequent links. The decay steps were varied between 30000 and 50000, with increments of 1000.
+The evaluation of results was performed across cases within each unique combination of control values and decay steps, rather than across the entire control scheme. This is due to the CL implementation, which focuses on enhancing training efficiency where the key factor is to find the optimal combination of values to facilitate faster and more robust learning in the system. To determine the best-performing combination of control values and decay steps, we concentrated on three primary factors: number of successful cases in each combination, mean and median values of training time across cases. For the single and double pendulum systems, a successful case was defined as achieving 50 out of 50 successful tests. For the triple pendulum system, due to its higher complexity, the threshold for success was set at 70 out of 100 tests passed. This adjustment reflects the increased difficulty of achieving full success for the triple link system. The results are shown in the Table~\ref{tab: CL results}.
 
 \begin{table}[ht]
 	\centering
@@ -197,7 +207,60 @@ Evaluation of the obtained results is performed across cases within each distinc
 	\label{tab: CL results}
 \end{table}
 
-According to the obtained results we are able to conclude, that for all 3 systems we have achieved an improvement in the amount of successfully trained cases (what means that the control became more robust) as well as in training time. The Table~\ref{tab: CL improvement statistics} shows the improvement of the training time in percents in accordance to our predetermined baseline. 
+The results in Table~\ref{tab: CL results} demonstrate the effectiveness of the best-performing control schemes across the three systems, with all systems achieving 10 out of 10 successful cases. These results highlight the robustness of the implemented Curriculum Learning in reducing training times while maintaining high success rates, even as system complexity increases.
+To gain further insights into how the variations in control schemes and decay steps influenced the training times, we present a series of heatmaps showed on Figure~\ref{fig: percentage heatmaps for 1- to 3- link systems using CL} (a) to (f). The percentage change in both mean and median training times for each pendulum system is visualized, offering a clear depiction of the impact of CL enhancements across different cases.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/SP_mean_heatmap_percentage.png}
+		\label{fig: SP_mean}
+		\caption{}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/SP_median_heatmap_percentage.png}
+		\label{fig: SP_median}
+		\caption{}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/DP_mean_heatmap_percentage.png}
+		\label{fig: DP_mean}
+		\caption{}
+	\end{subfigure}
+	
+	\vspace{0.2cm}
+	
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/DP_median_heatmap_percentage.png}
+		\label{fig: DP_median}
+		\caption{}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/TP_mean_heatmap_percentage.png}
+		\label{fig: TP_mean}
+		\caption{}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[t]{0.32\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{Figures/TP_median_heatmap_percentage.png}
+		\label{fig: TP_median}
+		\caption{}
+	\end{subfigure}
+	
+	\caption{Mean and median training time change per cases for 1- to 3- link pendulum systems using CL enhancement.}
+	\label{fig: percentage heatmaps for 1- to 3- link systems using CL}
+\end{figure}
+
+The heatmaps clearly demonstrate that, across all systems, the implementation of CL resulted in a substantial improvement in training speed. The 1-link system showed the greatest consistency, while the 2-link and 3-link systems demonstrated significant improvements in reduced training time.
 
 \begin{table}[ht]
 	\centering
@@ -211,6 +274,7 @@ According to the obtained results we are able to conclude, that for all 3 system
 	\end{tabular}
 	\label{tab: CL improvement statistics}
 \end{table}
-% results are open for improvements discussion
-Overall, these results demonstrate a clear trend: as the complexity of the system increases, the effectiveness of Curriculum Learning in improving RL performance may decrease. While CL significantly enhances training for simpler systems, its impact diminishes for more complex, multi-link systems, where the RL agent faces greater challenges in learning and generalization. The relatively consistent performance for the 1-link system suggests that simpler systems benefit more uniformly from CL, while the larger discrepancies observed in the 2-link and 3-link systems indicate that more complex dynamics introduce greater variability in the training process. These findings highlight the importance of considering system complexity when designing RL curriculum and suggest that additional modifications to the curriculum strategy, such as dynamic adjustment based on the agent's performance, may be required to further improve learning outcomes for more complex systems.
-% there can be a talk about that the main problem is actually searching for the best parameters if we really want to enhance our results, especially if talking about particular cases!
+
+The results in Table~\ref{tab: CL improvement statistics} indicate that the Curriculum Learning (CL) enhancement has proven effective in reducing training times and improving the robustness of reinforcement learning across all systems. While the 1-link system showed the greatest improvement, with a 32\% reduction in mean training time, the double and triple pendulum systems also exhibited substantial improvements, confirming the scalability of CL to more complex multi-link systems. This success demonstrates that CL enables the RL agent to better navigate the increased complexity of the tasks, allowing it to converge more efficiently. 
+One of the most important findings is that all systems, including the 2-link and 3-link systems, reached 10 out of 10 successful cases. This confirms that the control schemes used, combined with CL, were able to handle even the more complex tasks. By gradually increasing the difficulty of the tasks during training, CL helps the reinforcement learning agent learn more effectively, avoiding large jumps in difficulty that could slow down training or cause failure. The heatmaps provided earlier also showed consistent improvement in training time across different control values and decay steps, meaning that the benefits of CL are not limited to specific parameters. This makes CL a powerful and flexible tool for improving reinforcement learning across a wide range of scenarios. However, it’s important to recognize that finding the best parameters (such as control values and decay steps) is still key to maximizing the benefits of CL. While our results show significant improvements, further fine-tuning could make the training even faster, especially in more complicated systems. Future research could focus on dynamic approaches where the curriculum adjusts based on the agent's performance during training, potentially leading to even better results.
+In summary, Curriculum Learning has proven to be an effective way to speed up training and improve robustness in all systems tested. From the simpler 1-link pendulum to the more challenging 3-link system, CL has provided consistent improvements, making it a valuable strategy in reinforcement learning. These findings show the importance of a well-planned training process and suggest future possibilities for even greater gains with more advanced strategies.
