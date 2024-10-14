@@ -1,13 +1,13 @@
-\section{Methods}
+\section{Methods} \label{sec: Methods}
 
-\subsection{Mechanical model}
+\subsection{Mechanical model} \label{subsec: Mechanical model}
 
 The system under investigation is a multi-link inverted pendulum on a cart. This setup, known for its inherent instability and dynamic nature, is a cornerstone in control theory~\cite{Fantoni2001Nonlinear}. The cart, serving as the base platform for the pendulum links, is limited to linear motion along a horizontal track, simplifying the translational dynamics to one-dimensional motion along the x-axis. The cart's movement is controlled by an externally applied force $F$, which is crucial for the system's stabilization. The magnitude and direction of this force significantly impact the system's dynamics, providing a means to counteract the gravitational torque imposed by the pendulum links. The details of the system modelling are described in~\cite{manzl2023relrl}.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=10cm]{Figures/cart_pole_model.pdf}
-\caption{$N$-link inverted pendulum on a cart. Minimal coordinates formulation $\mathbf{q} = \mathbf{s} =  [x_{\text{cart}}, \theta_1, \ldots, \theta_N]$ are used to model the system. Each link consists of length $l_j$, mass $m_j$, moment of inertia $I_j$. The cart is a rigid body with mass $m_{cart}$.}
+\includegraphics[width=10cm]{Figures/cart_pole_model_phi.pdf}
+\caption{$N$-link inverted pendulum on a cart. Minimal coordinates formulation $\mathbf{q} = \mathbf{s} =  [x_{\text{cart}}, \varphi_1, \ldots, \varphi_N]$ are used to model the system. Each link consists of length $l_j$, mass $m_j$, moment of inertia $I_j$. The cart is a rigid body with mass $m_{cart}$.}
 \label{fig: n-pendulum on a cart}
 \end{figure}
 
@@ -15,15 +15,15 @@ Attached to the cart is a series of n rigid links, each connected end-to-end by 
 $j$ is characterized by mass $m_j$, length $l_j$ and inertia $I_j$.
 This model, with its high degree of control difficulty and relevance to real-world applications, provides a valuable platform for testing sophisticated control algorithms, including those based on Reinforcement Learning.
 
-\subsection{Reinforcement Learning with continuous action space}
+\subsection{Reinforcement Learning with continuous action space} \label{subsec: Reinforcement Learning with continuous action space}
 Reinforcement Learning is a branch of machine learning where an agent learns optimal behavior through systematic interaction with a dynamic environment, aiming to maximize cumulative rewards. This learning paradigm is distinct from supervised learning; in RL, the agent is not explicitly instructed which actions to take. Instead, it must explore and discover which actions yield the highest rewards by trial and error, a process often facilitated by a policy—a decision-making function that maps states of the environment to actions to be taken in those states~\cite{sutton_reinforcement_2018}.
 
 In our research, RL is employed to train agents to manage the dynamics of a multi-link inverted pendulum on a cart, a challenging control problem that requires maintaining precise dynamic stability throughout the process. The reward function in RL plays a crucial role as it guides the learning process. For instance, a reward function can be designed to penalize the agent for excessive movement away from a target state or for using too much energy, while rewarding closer approximations of the desired state, such as maintaining the pendulum in an upright position. We use the reward function, which has shown one of the best performances from our previous study
 \begin{equation}
-r = 1 - w_p \frac{\left|p_x\right|}{\chi_\mathrm{cart}} - (1-w_p) \frac{\sum_{j=1}^\mathrm{N} \left|\theta_j\right|}{\mathrm{N} \chi_{\theta}} 
+r = 1 - w_p \frac{\left|p_x\right|}{\chi_\mathrm{cart}} - (1-w_p) \frac{\sum_{j=1}^\mathrm{N} \left|\varphi_j\right|}{\mathrm{N} \chi_{\varphi}} 
 \label{eq:reward}
 \end{equation}
-It combines a tip position with the sum of pendulum link angles $\sum_{j=1}^{N} \left|\theta_j\right|$, weighted by a factor $w_p$. $\chi_\mathrm{cart}$ and $\chi_{\theta}$ are predefined, constant position and angle thresholds, which differ from 1-link to more link systems. $\mathrm{N}$ is the number of the links.
+It combines a tip position with the sum of pendulum link angles $\sum_{j=1}^{N} \left|\varphi_j\right|$, weighted by a factor $w_p$. $\chi_\mathrm{cart}$ and $\chi_{\varphi}$ are predefined, constant position and angle thresholds, which differ from 1-link to more link systems. $\mathrm{N}$ is the number of the links.
 
 In RL, the choice between discrete and continuous action space might significantly affect the performance of learning algorithms. Discrete action space, used in our previous study, limits the agent’s actions to a finite set of possibilities: it either applies a negative or a positive force of the same magnitude to regulate the behavior of the system. In a continuous action space the agent is provided with an interval of the control force
 \begin{equation}
@@ -34,7 +34,7 @@ From this interval in Eq.~\eqref{eq:force} the agent is free to choose any suita
 % NOTE: 1) continue with - adding a final punchline to this section
 % While simpler to implement, this can restrict the agent's ability to finely tune its responses to the environment's demands.
 
-\subsection{Model evaluation} \label{Model evaluation}
+\subsection{Model evaluation} \label{subsec: Model evaluation}
 \todo[inline, disable]{Write a single paragraph explaining the model evaluation in simple words. - addressed with the first paragraph}
 The evaluation of the model follows the same methodology used in our previous research by Manzl et al.~\cite{manzl2023relrl}. The agent's performance is periodically assessed using two primary metrics: the mean reward must exceed a defined threshold \( \lambda_r \), and the loss must remain below a threshold \( \lambda_l \). These thresholds serve as indicators of the agent's learning progress and effectiveness in the task. \todo[inline, disable]{This statement is inaccurate. Is it really the base for evaluation? - what's the inaccuracy here? I have no clue how does the tests framework operates "under the hood" - its function is inside exudyn framework especially for machine learning evaluation and the explanation inside of it is just bad | here at the beginning i've made just a simple copy-paste from the first paper because even there if you're reading it you can't really understand that evaluation pipeline properly}
 During each evaluation phase, the agent undergoes \( n_{\text{test}} \) tests in a simulated environment over \( n_{\text{eval}} \) time steps, where \( n_{\text{eval}} \) is greater than \( n_{\text{learn}} \). This inequality, \( n_{\text{eval}} > n_{\text{learn}} \), ensures that the evaluation period allows for more comprehensive testing of the model's generalization beyond the learning phase.\todo[inline, disable]{Write what does this inequality means - done in the previous sentence}
@@ -78,12 +78,12 @@ Table~\ref{tab:hyperparameters} summarizes the hyperparameters used in the exper
 		Cart force              & $f_{\text{cart}}$ in N         & \([-12, 12]\)   & \([-40, 40]\)   & \([-60, 60]\)  \\ 
 		Threshold cart position & $\chi_x$ in m                 & 1.2  & 3.6  & 5.4 \\ 
 		Threshold link angle    & $\chi_\varphi$ in rad         & $\frac{\pi}{20}$ & $\frac{\pi}{10}$ & $\frac{3\pi}{20}$ \\
-%		For $\theta_1$ to $\theta_N$ \todo[inline, size=\tiny, inlinewidth=3cm]{Is this needed here? Confusing. JUST COMMENTED OUT THIS LINE}  & & & & \\ 
+%		For $\varphi_1$ to $\varphi_N$ \todo[inline, size=\tiny, inlinewidth=3cm]{Is this needed here? Confusing. JUST COMMENTED OUT THIS LINE}  & & & & \\ 
 		Max test error          & $e_{\text{test}}$             & 0.2  & 0.5  & 0.75 \\ 
 		Reward position factor  & $w_p$                         & 0.5  & 0.5  & 0.8 to 1 \\ 
 		Required training steps & $n_{\text{learn}}$            & $80 \cdot 10^3$ & $150 \cdot 10^3$ & $350 \cdot 10^3$ \\ 
 		Max episode length      & $n_{\text{episode,max}}$      & 1280 & 1536 & 2048 \\ 
-		Tests per evaluation    & $n_{\text{test}}$             & 50   & 50   & 100 \\ 
+		Tests per evaluation    & $n_{\text{test}}$             & 50   & 50   & 70 \\ 
 		\bottomrule
 	\end{tabular}
 \end{table}

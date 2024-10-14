@@ -1,2 +1,13 @@
 \section{Conclusions}
+This study explored the integration of continuous action space and Curriculum Learning in Reinforcement Learning for controlling complex multibody systems, focusing on an inverted multi-link pendulum. While continuous action space proved advantageous over discrete spaces by enabling smoother control and faster convergence, the use of CL presented mixed results.
 
+The continuous action space allowed the RL agents to handle complex, non-linear dynamics more efficiently, particularly in systems with multiple degrees of freedom. It reduced the training time significantly compared to the discrete action space, and the agents demonstrated better stability and adaptability. However, the advantages of continuous action spaces alone are limited when the system complexity increases, as observed in multi-link systems.
+
+The implementation of CL, designed to gradually increase task difficulty, showed potential to further accelerate the learning process and improve performance. However, the effectiveness of CL was highly dependent on the selection of key parameters, such as decay functions, control values, and decay steps. The results revealed no consistent pattern for optimizing these parameters across different systems, meaning the benefits of CL were highly case-dependent. In some configurations, CL reduced training time and improved robustness, but in others, the training duration increased or the success rate dropped. This underscores a significant limitation: the lack of clear guidelines for selecting the most effective CL parameters for a given system.
+
+While CL has the potential to enhance RL training, its successful application requires extensive trial and error to determine the appropriate settings. This makes CL less predictable and harder to generalize across different tasks. Future research should focus on developing more systematic approaches for parameter selection in CL, potentially incorporating adaptive or automated methods to fine-tune these settings.
+
+In conclusion, while continuous action spaces clearly improve the RL control of dynamic systems, the utility of CL remains inconsistent due to the complexity of parameter selection. The findings highlight the need for further research to establish more reliable methodologies for applying CL in RL-based control tasks, particularly in multibody system dynamics.
+\todo[inline, disable]{The results are not convincing enough to state we have proven CRL is effective. Rewrite in more objective way and move to the conclusions section.}
+\todo[inline, disable]{Future research is for the last section}
+% these comments addressed with this section
